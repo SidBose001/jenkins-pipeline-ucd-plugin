@@ -114,18 +114,19 @@ public class UCDeploySite implements Serializable {
 
     public DefaultHttpClient getClient() {
         final long _start = System.nanoTime(); // timing start [web:271]
-        log.info("[UrbanCode Deploy] getClient() start | trustAllCerts=" + trustAllCerts + ", alwaysCreateNewClient=" + alwaysCreateNewClient); // context [web:271]
+        log.info("[UrbanCode Deploy] getClient() start | trustAllCerts=" + trustAllCerts + ", alwaysCreateNewClient=" + alwaysCreateNewClient); 
         try {
             if (client == null || alwaysCreateNewClient == true) {
-                log.info("[UrbanCode Deploy] getClient(): creating new HTTP client (clientWasNull=" + (client == null) + ")"); // cache vs new [web:271]
-                client = UDRestClient.createHttpClient(user, password.getPlainText(), trustAllCerts); // unchanged call [web:271]
-                log.info("[UrbanCode Deploy] getClient(): new HTTP client created successfully"); // success [web:271]
+                log.info("[UrbanCode Deploy] getClient(): creating new HTTP client (clientWasNull=" + (client == null) + ")"); 
+                client = UDRestClient.createHttpClient(user, password.getPlainText(), trustAllCerts); 
+                log.info("[UCD] ctor: created HttpClient instance id=" + System.identityHashCode(client) + ", class=" + client.getClass().getName());
+                log.info("[UrbanCode Deploy] getClient(): new HTTP client created successfully"); 
             } else {
-                log.info("[UrbanCode Deploy] getClient(): reusing cached HTTP client"); // reuse info [web:271]
+                log.info("[UrbanCode Deploy] getClient(): reusing cached HTTP client"); 
             }
             return client; // unchanged return [web:271]
         } catch (Exception e) {
-            log.error("[UrbanCode Deploy] getClient(): exception while creating/retrieving client: " + e.getMessage(), e); // error detail [web:271]
+            log.error("[UrbanCode Deploy] getClient(): exception while creating/retrieving client: " + e.getMessage(), e);
             throw e; // unchanged behavior [web:271]
         } finally {
             long _ms = (System.nanoTime() - _start) / 1_000_000L; // timing end [web:271]
