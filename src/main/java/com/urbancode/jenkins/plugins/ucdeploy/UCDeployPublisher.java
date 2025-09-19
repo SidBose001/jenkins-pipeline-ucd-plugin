@@ -61,6 +61,7 @@ public class UCDeployPublisher extends Builder implements SimpleBuildStep {
     private UserBlock altUser;
     private VersionBlock component;
     private DeployBlock deploy;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UCDeployPublisher.class);
 
     /**
      * Constructor used for data-binding fields from the corresponding
@@ -337,7 +338,7 @@ public class UCDeployPublisher extends Builder implements SimpleBuildStep {
         DefaultHttpClient udClient = useAltUser
                 ? udSite.getTempClient(getAltUsername(), getAltPassword())
                 : udSite.getClient();
-        log.info("[UCD] perform: effClientId=" + System.identityHashCode(effClient) + ", usedPath=" + (altUser != null ? "tempClient" : "cachedClient"));
+        log.info("[UCD] perform: effClientId=" + System.identityHashCode(udClient) + ", usedPath=" + (altUser != null ? "tempClient" : "cachedClient"));
         EnvVars envVars = build.getEnvironment(listener);
 
         if (componentChecked()) {
