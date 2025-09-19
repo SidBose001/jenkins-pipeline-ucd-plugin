@@ -113,24 +113,26 @@ public class UCDeploySite implements Serializable {
     }
 
     public DefaultHttpClient getClient() {
-        final long _start = System.nanoTime(); // timing start [web:271]
+        final long _start = System.nanoTime(); 
         log.info("[UrbanCode Deploy] getClient() start | trustAllCerts=" + trustAllCerts + ", alwaysCreateNewClient=" + alwaysCreateNewClient); 
         try {
+            log.info("[UCD] getClient() entry: currentClientId=" + (client == null ? "<null>" : System.identityHashCode(client)));
             if (client == null || alwaysCreateNewClient == true) {
                 log.info("[UrbanCode Deploy] getClient(): creating new HTTP client (clientWasNull=" + (client == null) + ")"); 
                 client = UDRestClient.createHttpClient(user, password.getPlainText(), trustAllCerts); 
                 log.info("[UCD] ctor: created HttpClient instance id=" + System.identityHashCode(client) + ", class=" + client.getClass().getName());
                 log.info("[UrbanCode Deploy] getClient(): new HTTP client created successfully"); 
             } else {
+                log.info("[UCD] getClient(): REUSE HttpClient id=" + System.identityHashCode(client));
                 log.info("[UrbanCode Deploy] getClient(): reusing cached HTTP client"); 
             }
-            return client; // unchanged return [web:271]
+            return client; 
         } catch (Exception e) {
             log.error("[UrbanCode Deploy] getClient(): exception while creating/retrieving client: " + e.getMessage(), e);
-            throw e; // unchanged behavior [web:271]
+            throw e;
         } finally {
-            long _ms = (System.nanoTime() - _start) / 1_000_000L; // timing end [web:271]
-            log.info("[UrbanCode Deploy] getClient() end | durationMs=" + _ms + ", cachedClientPresent=" + (client != null)); // timing + state [web:271]
+            long _ms = (System.nanoTime() - _start) / 1_000_000L; 
+            log.info("[UrbanCode Deploy] getClient() end | durationMs=" + _ms + ", cachedClientPresent=" + (client != null)); 
         }
     }
 
@@ -138,17 +140,18 @@ public class UCDeploySite implements Serializable {
         final long _start = System.nanoTime(); // timing start [web:271]
         log.info("[UrbanCode Deploy] getTempClient() start | trustAllCerts=" + trustAllCerts + ", tempUserPrefix=" + (tempUser == null ? "<null>" : tempUser.substring(0, Math.min(3, tempUser.length())) + "***")); // context with redacted user [web:271]
         try {
-            DefaultHttpClient tmp = UDRestClient.createHttpClient(tempUser, tempPassword.getPlainText(), trustAllCerts); // unchanged call [web:271]
-            log.info("[UrbanCode Deploy] getTempClient(): temporary HTTP client created successfully"); // success [web:271]
+            DefaultHttpClient tmp = UDRestClient.createHttpClient(tempUser, tempPassword.getPlainText(), trustAllCerts); 
+            log.info("[UCD] getTempClient(): TEMP HttpClient id=" + System.identityHashCode(tmp));
+            log.info("[UrbanCode Deploy] getTempClient(): temporary HTTP client created successfully");
             return tmp; // unchanged return [web:271]
         } catch (Exception e) {
             log.error("[UrbanCode Deploy] getTempClient(): exception while creating temporary client for user prefix '" +
                     (tempUser == null ? "<null>" : tempUser.substring(0, Math.min(3, tempUser.length())) + "***") +
-                    "': " + e.getMessage(), e); // error detail [web:271]
-            throw e; // unchanged behavior [web:271]
+                    "': " + e.getMessage(), e); 
+            throw e; 
         } finally {
-            long _ms = (System.nanoTime() - _start) / 1_000_000L; // timing end [web:271]
-            log.info("[UrbanCode Deploy] getTempClient() end | durationMs=" + _ms); // timing [web:271]
+            long _ms = (System.nanoTime() - _start) / 1_000_000L; 
+            log.info("[UrbanCode Deploy] getTempClient() end | durationMs=" + _ms); 
         }
     }
 
