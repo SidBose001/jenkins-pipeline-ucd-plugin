@@ -26,7 +26,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import hudson.model.TaskListener;
 /**
  * This class is used to configure individual sites which are
  * stored globally in the GlobalConfig object
@@ -113,45 +113,42 @@ public class UCDeploySite implements Serializable {
     }
 
     public DefaultHttpClient getClient() {
-        final long _start = System.nanoTime(); 
-        listener.getLogger().println("[UrbanCode Deploy] getClient() start | trustAllCerts=" + trustAllCerts + ", alwaysCreateNewClient=" + alwaysCreateNewClient); 
+        final long _start = System.nanoTime(); // timing start [web:271]
+        log.info("[UrbanCode Deploy] getClient() start | trustAllCerts=" + trustAllCerts + ", alwaysCreateNewClient=" + alwaysCreateNewClient); // context [web:271]
         try {
-            listener.getLogger().println("[UCD] getClient() entry: currentClientId=" + (client == null ? "<null>" : System.identityHashCode(client)));
             if (client == null || alwaysCreateNewClient == true) {
-                listener.getLogger().println("[UrbanCode Deploy] getClient(): creating new HTTP client (clientWasNull=" + (client == null) + ")"); 
-                client = UDRestClient.createHttpClient(user, password.getPlainText(), trustAllCerts); 
-                listener.getLogger().println("[UCD] ctor: created HttpClient instance id=" + System.identityHashCode(client) + ", class=" + client.getClass().getName());
-                listener.getLogger().println("[UrbanCode Deploy] getClient(): new HTTP client created successfully"); 
+                log.info("[UrbanCode Deploy] getClient(): creating new HTTP client (clientWasNull=" + (client == null) + ")"); // cache vs new [web:271]
+                client = UDRestClient.createHttpClient(user, password.getPlainText(), trustAllCerts); // unchanged call [web:271]
+                log.info("[UrbanCode Deploy] getClient(): new HTTP client created successfully"); // success [web:271]
             } else {
-                listener.getLogger().println("[UCD] getClient(): REUSE HttpClient id=" + System.identityHashCode(client));
-                listener.getLogger().println("[UrbanCode Deploy] getClient(): reusing cached HTTP client"); 
+                log.info("[UrbanCode Deploy] getClient(): reusing cached HTTP client"); // reuse info [web:271]
             }
-            return client; 
+            return client; // unchanged return [web:271]
         } catch (Exception e) {
-            listener.error("[UrbanCode Deploy] getClient(): exception while creating/retrieving client: " + e.getMessage(), e);
-            throw e;
+            log.error("[UrbanCode Deploy] getClient(): exception while creating/retrieving client: " + e.getMessage(), e); // error detail [web:271]
+            throw e; // unchanged behavior [web:271]
         } finally {
-            long _ms = (System.nanoTime() - _start) / 1_000_000L; 
-            listener.getLogger().println("[UrbanCode Deploy] getClient() end | durationMs=" + _ms + ", cachedClientPresent=" + (client != null)); 
+            long _ms = (System.nanoTime() - _start) / 1_000_000L; // timing end [web:271]
+            log.info("[UrbanCode Deploy] getClient() end | durationMs=" + _ms + ", cachedClientPresent=" + (client != null)); // timing + state [web:271]
         }
     }
 
     public DefaultHttpClient getTempClient(String tempUser, Secret tempPassword) {
         final long _start = System.nanoTime(); // timing start [web:271]
-        listener.getLogger().println("[UrbanCode Deploy] getTempClient() start | trustAllCerts=" + trustAllCerts + ", tempUserPrefix=" + (tempUser == null ? "<null>" : tempUser.substring(0, Math.min(3, tempUser.length())) + "***")); // context with redacted user [web:271]
+        System.out.println("[UrbanCode Deploy] getTempClient() start | trustAllCerts=" + trustAllCerts + ", tempUserPrefix=" + (tempUser == null ? "<null>" : tempUser.substring(0, Math.min(3, tempUser.length())) + "***"));
+
         try {
-            DefaultHttpClient tmp = UDRestClient.createHttpClient(tempUser, tempPassword.getPlainText(), trustAllCerts); 
-            listener.getLogger().println("[UCD] getTempClient(): TEMP HttpClient id=" + System.identityHashCode(tmp));
-            listener.getLogger().println("[UrbanCode Deploy] getTempClient(): temporary HTTP client created successfully");
+            DefaultHttpClient tmp = UDRestClient.createHttpClient(tempUser, tempPassword.getPlainText(), trustAllCerts); // unchanged call [web:271]
+            System.out.println("[UrbanCode Deploy] getTempClient(): temporary HTTP client created successfully"); // success [web:271]
             return tmp; // unchanged return [web:271]
         } catch (Exception e) {
-            listener.error("[UrbanCode Deploy] getTempClient(): exception while creating temporary client for user prefix '" +
+            System.out.println("[UrbanCode Deploy] getTempClient(): exception while creating temporary client for user prefix '" +
                     (tempUser == null ? "<null>" : tempUser.substring(0, Math.min(3, tempUser.length())) + "***") +
-                    "': " + e.getMessage(), e); 
-            throw e; 
+                    "': " + e.getMessage(), e); // error detail [web:271]
+            throw e; // unchanged behavior [web:271]
         } finally {
-            long _ms = (System.nanoTime() - _start) / 1_000_000L; 
-            listener.getLogger().println("[UrbanCode Deploy] getTempClient() end | durationMs=" + _ms); 
+            long _ms = (System.nanoTime() - _start) / 1_000_000L; // timing end [web:271]
+            System.out.println("[UrbanCode Deploy] getTempClient() end | durationMs=" + _ms); // timing [web:271]
         }
     }
 
@@ -326,7 +323,7 @@ public class UCDeploySite implements Serializable {
     }
 
     public void executeJSONGet(URI uri) throws Exception {
-        listener.getLogger().println("[UrbanCode Deploy] uri: " + uri.toString());
+        log.info("[UrbanCode Deploy] uri: " + uri.toString());
         HttpClient client = getClient();
         HttpGet method = new HttpGet(uri.toString());
         try {
@@ -341,7 +338,7 @@ public class UCDeploySite implements Serializable {
             }
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-                listener.getLogger().println("[UrbanCode Deploy] response: " + EntityUtils.toString(entity));
+                log.info("[UrbanCode Deploy] response: " + EntityUtils.toString(entity));
             }
         }
         finally {
