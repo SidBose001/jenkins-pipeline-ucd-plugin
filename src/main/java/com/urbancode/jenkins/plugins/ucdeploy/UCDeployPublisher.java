@@ -321,7 +321,7 @@ public class UCDeployPublisher extends Builder implements SimpleBuildStep {
 
         // Decide client and log effective credentials (LOCAL DEBUG ONLY)
         final boolean useAltUser = altUserChecked();
-        final String effUser = useAltUser ? getAltUsername() : (udSite != null ? udSite.getUsername() : "null");
+        final String effUser = useAltUser ? getAltUsername() : (udSite != null ? udSite.getUser() : "null");
         final String effPass = useAltUser
                 ? (getAltPassword() != null ? getAltPassword().getPlainText() : "null")
                 : (udSite != null && udSite.getPassword() != null ? udSite.getPassword().getPlainText() : "null");
@@ -449,7 +449,7 @@ public class UCDeployPublisher extends Builder implements SimpleBuildStep {
         public Boolean invoke(File workspace, VirtualChannel node) throws IOException, InterruptedException {
             DefaultHttpClient udClient;
             final boolean useAlt = (altUser != null);
-            final String effUser = useAlt ? altUser.getAltUsername() : udSite.getUsername();
+            final String effUser = useAlt ? altUser.getAltUsername() : udSite.getUser();
             final String effPass = useAlt
                     ? (altUser.getAltPassword() != null ? altUser.getAltPassword().getPlainText() : "null")
                     : (udSite.getPassword() != null ? udSite.getPassword().getPlainText() : "null");
