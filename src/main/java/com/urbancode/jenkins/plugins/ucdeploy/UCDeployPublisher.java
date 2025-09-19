@@ -338,7 +338,7 @@ public class UCDeployPublisher extends Builder implements SimpleBuildStep {
         DefaultHttpClient udClient = useAltUser
                 ? udSite.getTempClient(getAltUsername(), getAltPassword())
                 : udSite.getClient();
-        log.info("[UCD] perform: effClientId=" + System.identityHashCode(udClient) + ", usedPath=" + (altUser != null ? "tempClient" : "cachedClient"));
+        listener.getLogger().println("[UCD] perform: effClientId=" + System.identityHashCode(udClient) + ", usedPath=" + (altUser != null ? "tempClient" : "cachedClient"));
         EnvVars envVars = build.getEnvironment(listener);
 
         if (componentChecked()) {
